@@ -1,5 +1,4 @@
-import { StoryObj } from '@storybook/react';
-import { FC } from 'react';
+import { StoryContext } from "@storybook/react";
 
 export interface Result {
   divs: DOMRect[];
@@ -53,8 +52,8 @@ export type MultiToolbarParams = {
   lists: MultiToolbarList[];
   /** Show separator between previous toolbar */
   separator?: boolean;
-  /** Filter stories. RegExp tests against <code>Story.kind</code>. */
-  filter?: ((story: StoryObj) => boolean) | RegExp;
+  /** Filter stories. RegExp tests against <code>story.title</code>. */
+  filter?: ((storyData: any) => boolean) | RegExp;
 };
 
 export type MultiToolbarParameters = {

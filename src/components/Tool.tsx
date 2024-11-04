@@ -4,16 +4,15 @@ import { Separator } from 'storybook/internal/components';
 import { STORY_RENDERED } from 'storybook/internal/core-events';
 import { DEFAULT_CONFIG, KEY } from '../constants';
 import { MultiToolbarParams } from '../types';
-import { StoryObj } from '@storybook/react';
 import MultiToolbar from './MultiToolbar';
 
-const createToolbars = (toolbars: MultiToolbarParams[], story: StoryObj) => {
+const createToolbars = (toolbars: MultiToolbarParams[], storyData: any) => {
   return toolbars.filter((toolbar) => {
     if (toolbar.filter) {
       if (typeof toolbar.filter === 'function') {
-        return toolbar.filter(story);
+        return toolbar.filter(storyData);
       }
-      return toolbar.filter.test(story.storyName);
+      return toolbar.filter.test(storyData.title);
     }
     return true;
   });
