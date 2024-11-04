@@ -1,15 +1,14 @@
-import React, { Fragment, memo, useState } from 'react';
-import { type API, useChannel, useParameter } from 'storybook/internal/manager-api';
-import { Separator } from 'storybook/internal/components';
-import { STORY_RENDERED } from 'storybook/internal/core-events';
-import { DEFAULT_CONFIG, KEY } from '../constants';
-import { MultiToolbarParams } from '../types';
-import MultiToolbar from './MultiToolbar';
+import React, { Fragment, memo, useMemo } from "react";
+import { type API, useParameter } from "storybook/internal/manager-api";
+import { Separator } from "storybook/internal/components";
+import { DEFAULT_CONFIG, KEY } from "../constants";
+import { MultiToolbarParams } from "../types";
+import MultiToolbar from "./MultiToolbar";
 
 const createToolbars = (toolbars: MultiToolbarParams[], storyData: any) => {
   return toolbars.filter((toolbar) => {
     if (toolbar.filter) {
-      if (typeof toolbar.filter === 'function') {
+      if (typeof toolbar.filter === "function") {
         return toolbar.filter(storyData);
       }
       return toolbar.filter.test(storyData.title);
@@ -20,20 +19,11 @@ const createToolbars = (toolbars: MultiToolbarParams[], storyData: any) => {
 
 export const Tool = memo(function MyAddonSelector({ api }: { api: API }) {
   const multiToolbarConfig = useParameter(KEY, DEFAULT_CONFIG);
-  const [toolbars, setToolbars] = useState([] as MultiToolbarParams[]);
 
-  useChannel(
-    {
-      [STORY_RENDERED]: () =>
-        setToolbars(
-          createToolbars(
-            multiToolbarConfig.toolbars,
-            api.getCurrentStoryData(),
-          ),
-        ),
-    },
-    [multiToolbarConfig],
-  );
+  const toolbars = useMemo<MultiToolbarParams[]>(() => createToolbars(
+    multiToolbarConfig.toolbars,
+    api.getCurrentStoryData()
+  ), [multiToolbarConfig]);
 
   if (multiToolbarConfig.disable || toolbars.length === 0) {
     return null;

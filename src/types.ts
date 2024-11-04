@@ -1,10 +1,3 @@
-import { StoryContext } from "@storybook/react";
-
-export interface Result {
-  divs: DOMRect[];
-  styled: DOMRect[];
-}
-
 type MultiToolbarListItemBase = {
   title: string;
   left?: string;
