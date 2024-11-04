@@ -1,40 +1,55 @@
-import React, { memo, useCallback, useEffect } from "react";
-import { useGlobals, type API } from "storybook/internal/manager-api";
-import { IconButton } from "storybook/internal/components";
-import { ADDON_ID, KEY, TOOL_ID } from "../constants";
-import { LightningIcon } from "@storybook/icons";
+import React, { Fragment, memo, useState } from 'react';
+import { type API, useChannel, useParameter } from 'storybook/internal/manager-api';
+import { Separator } from 'storybook/internal/components';
+import { STORY_RENDERED } from 'storybook/internal/core-events';
+import { DEFAULT_CONFIG, KEY } from '../constants';
+import { MultiToolbarParams } from '../types';
+import { StoryObj } from '@storybook/react';
+import MultiToolbar from './MultiToolbar';
+
+const createToolbars = (toolbars: MultiToolbarParams[], story: StoryObj) => {
+  return toolbars.filter((toolbar) => {
+    if (toolbar.filter) {
+      if (typeof toolbar.filter === 'function') {
+        return toolbar.filter(story);
+      }
+      return toolbar.filter.test(story.storyName);
+    }
+    return true;
+  });
+};
 
 export const Tool = memo(function MyAddonSelector({ api }: { api: API }) {
-  const [globals, updateGlobals, storyGlobals] = useGlobals();
+  const multiToolbarConfig = useParameter(KEY, DEFAULT_CONFIG);
+  const [toolbars, setToolbars] = useState([] as MultiToolbarParams[]);
 
-  const isLocked = KEY in storyGlobals;
-  const isActive = !!globals[KEY];
+  useChannel(
+    {
+      [STORY_RENDERED]: () =>
+        setToolbars(
+          createToolbars(
+            multiToolbarConfig.toolbars,
+            api.getCurrentStoryData(),
+          ),
+        ),
+    },
+    [multiToolbarConfig],
+  );
 
-  const toggle = useCallback(() => {
-    updateGlobals({
-      [KEY]: !isActive,
-    });
-  }, [isActive]);
-
-  useEffect(() => {
-    api.setAddonShortcut(ADDON_ID, {
-      label: "Toggle Measure [O]",
-      defaultShortcut: ["O"],
-      actionName: "outline",
-      showInMenu: false,
-      action: toggle,
-    });
-  }, [toggle, api]);
+  if (multiToolbarConfig.disable || toolbars.length === 0) {
+    return null;
+  }
 
   return (
-    <IconButton
-      key={TOOL_ID}
-      active={isActive}
-      disabled={isLocked}
-      title="Enable my addon"
-      onClick={toggle}
-    >
-      <LightningIcon />
-    </IconButton>
+    <>
+      <Separator />
+
+      {toolbars.map((toolbar, index) => (
+        <Fragment key={toolbar.param}>
+          {index !== 0 && toolbar.separator && <Separator />}
+          <MultiToolbar toolbar={toolbar} />
+        </Fragment>
+      ))}
+    </>
   );
 });

@@ -1,9 +1,11 @@
 {
   "name": "storybook-multi-toolbar",
-  "version": "0.0.0",
+  "version": "2.0.0-0",
   "description": "Storybook addon to define multiple toggleable toolbar items",
   "keywords": [
-    "toolbar", "multi", "storybook-addons"
+    "toolbar",
+    "multi",
+    "storybook-addons"
   ],
   "repository": {
     "type": "git",
@@ -23,7 +25,6 @@
       "import": "./dist/preview.js",
       "require": "./dist/preview.cjs"
     },
-    "./preset": "./dist/preset.cjs",
     "./manager": "./dist/manager.js",
     "./package.json": "./package.json"
   },
@@ -40,8 +41,7 @@
     "start": "run-p build:watch \"storybook --quiet\"",
     "prerelease": "zx scripts/prepublish-checks.js",
     "release": "npm run build && auto shipit",
-    "eject-ts": "zx scripts/eject-typescript.js",
-    "storybook": "storybook dev -p 6006",
+    "storybook": "storybook dev -p 6008 --ci",
     "build-storybook": "storybook build"
   },
   "dependencies": {
@@ -91,15 +91,13 @@
     ],
     "previewEntries": [
       "src/preview.ts"
-    ],
-    "nodeEntries": [
-      "src/preset.ts"
     ]
   },
   "storybook": {
     "displayName": "Storybook Multi Toolbar",
     "supportedFrameworks": [
-      "react", "preact"
+      "react",
+      "preact"
     ],
     "icon": "https://user-images.githubusercontent.com/321738/63501763-88dbf600-c4cc-11e9-96cd-94adadc2fd72.png"
   }
